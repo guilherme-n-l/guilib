@@ -1,5 +1,9 @@
 # GuiLIB
 
+<div align=center style="display:flex">
+  <img src="./img/logo.png" width="10%"/>
+</div>
+
 Since C provides a minimalist set of built-in features, I created this library to make certain tasks more convenient and to enhance my own workflow.
  My main goal was to add practical tools and new data structures that aren't part of the standard library, making my development experience in C a bit easier and more efficient.
 
