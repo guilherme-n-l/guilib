@@ -1,5 +1,5 @@
-LDPATH = ./guilib/include
-SRC_DIR = guilib/src
+LDPATH = ./include
+SRC_DIR = src
 TMP_DIR = tmp 
 TARGET_DIR = bin
 

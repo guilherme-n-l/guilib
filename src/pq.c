@@ -38,6 +38,12 @@ pq_t *pq_create(size_t size, int (*func)(const void *, const void *)) {
     pq_ptr->arr = malloc(size * sizeof(void *));
     pq_ptr->size = size;
     pq_ptr->len = 0;
+
+    if (!func) {
+        fprintf(stderr, "pq_error: Compare function must not be null\n");
+        abort();
+    }
+
     pq_ptr->compare = func;
 
     return pq_ptr;
@@ -55,7 +61,7 @@ char pq_is_empty(pq_t *pq) {
 
 void pq_insert(pq_t *pq, void *i) {
     if (pq->len + 1 > pq->size) {
-        fprintf(stderr, "New length %ld is greater than pq size %ld\n", pq->len + 1, pq->size);
+        fprintf(stderr, "pq_error: New length %ld is greater than pq size %ld\n", pq->len + 1, pq->size);
         abort();
     }
 
@@ -70,7 +76,7 @@ void pq_insert(pq_t *pq, void *i) {
 
 const void *pq_peek(pq_t *pq) {
     if (pq->len == 0) {
-        fprintf(stderr, "Trying to access element in empty pq\n");
+        fprintf(stderr, "pq_error: Trying to access element in empty pq\n");
         abort();
     }
     return pq->arr[0];
@@ -78,7 +84,7 @@ const void *pq_peek(pq_t *pq) {
 
 const void *pq_remove(pq_t *pq) {
     if (pq->len == 0) {
-        fprintf(stderr, "Trying to remove element from empty pq\n");
+        fprintf(stderr, "pq_error: Trying to remove element from empty pq\n");
         abort();
     }
 

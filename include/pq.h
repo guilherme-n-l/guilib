@@ -42,6 +42,8 @@ typedef struct _pq_t pq_t;
  *        - Zero if the two elements have equal priority.
  *        - A positive integer if the first element has higher priority than the second.
  *
+ *        @note If `compare` is NULL, the function will abort.
+ *
  * @return A pointer to the created priority queue.
  * 
  * @note The priority queue needs to be freed using `pq_destroy()` when no longer needed.
@@ -140,4 +142,3 @@ size_t pq_len(pq_t *pq);
 size_t pq_size(pq_t *pq);
 
 #endif 
-
