@@ -38,9 +38,9 @@ typedef struct _pq_t pq_t;
  * @param size The maximum number of elements the priority queue can hold.
  * @param compare A comparison function used to maintain the heap order.
  *        The function should return:
- *        - A negative integer if the first element has lower priority than the second.
+ *        - A negative integer if the first element has higher priority than the second.
  *        - Zero if the two elements have equal priority.
- *        - A positive integer if the first element has higher priority than the second.
+ *        - A positive integer if the first element has lower priority than the second.
  *
  *        @note If `compare` is NULL, the function will abort.
  *
