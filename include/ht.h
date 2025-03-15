@@ -1,11 +1,11 @@
 /**
  * @file ht.h
  * @brief Hash Table Implementation
- * 
+ *
  * This header file declares the interface for a hash table (ht_t) data structure
  * and associated functions. The hash table supports insertion, removal, retrieval,
  * and destruction of elements based on a key-value mechanism.
- * 
+ *
  * The hash table is implemented using a hashing function for key comparison
  * and a collision resolution strategy.
  */
@@ -68,9 +68,9 @@ void ht_destroy(ht_t *ht);
  * key already exists in the table, it will be updated with the new value.
  *
  * @param ht A pointer to the hash table.
- * @param k A pointer to the key. 
- * @param v A pointer to the value to be inserted. 
- * 
+ * @param k A pointer to the key.
+ * @param v A pointer to the value to be inserted.
+ *
  * @note The caller is responsible for allocating memory for the key if needed.
  */
 void ht_insert(ht_t *ht, const void *k, const void *v);
@@ -84,7 +84,7 @@ void ht_insert(ht_t *ht, const void *k, const void *v);
  *
  * @param ht A pointer to the hash table.
  * @param k A pointer to the key whose value is to be removed.
- * 
+ *
  * @return A pointer to the value associated with the key, or NULL if
  *         the key is not found.
  */
@@ -111,7 +111,7 @@ const void *ht_get(ht_t *ht, const void *k);
  * This function returns the current number of key-value pairs stored in the hash table.
  *
  * @param ht A pointer to the hash table.
- * 
+ *
  * @return The number of elements in the hash table.
  */
 size_t ht_len(ht_t *ht);
@@ -122,7 +122,7 @@ size_t ht_len(ht_t *ht);
  * This function returns the maximum number of elements the hash table can hold.
  *
  * @param ht A pointer to the hash table.
- * 
+ *
  * @return The maximum size of the hash table.
  */
 size_t ht_size(ht_t *ht);
@@ -175,4 +175,21 @@ unsigned ht_string_hash(const void *k);
  */
 int ht_string_equal(const void *k_a, const void *k_b);
 
+/**
+ * @brief Converts a pointer's address to a string representation.
+ *
+ * This function takes the address of a pointer (i.e., a `const void *`) and
+ * returns a string that represents its memory address. The returned string
+ * is typically formatted as a hexadecimal value representing the pointer's address.
+ *
+ * @param ptr A pointer whose memory address is to be converted to a string.
+ *            The parameter is expected to be a `const void *`.
+ *
+ * @return A string representation of the memory address of the provided pointer.
+ *         The string is typically formatted as a hexadecimal number.
+ *
+ * @note The returned string represents the address of the pointer in memory,
+ *       and is not meant to represent the actual data the pointer is pointing to.
+ */
+const char *DEFAULT_VAL_TO_STR(const void *);
 #endif

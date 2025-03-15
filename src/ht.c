@@ -1,3 +1,4 @@
+#include "utils.h"
 #include "ht.h"
 #include <stdlib.h>
 #include <stdio.h>
@@ -6,11 +7,11 @@
  * @struct _kv_pair
  * @brief A structure representing a key-value pair in the hash table.
  *
- * This structure is used internally to store key-value pairs in the hash table. 
- * Each entry holds a pointer to the key, a pointer to the value, and the index 
+ * This structure is used internally to store key-value pairs in the hash table.
+ * Each entry holds a pointer to the key, a pointer to the value, and the index
  * of the next entry in the case of a collision.
  *
- * @note This structure is for internal usage only. Users should not modify it 
+ * @note This structure is for internal usage only. Users should not modify it
  *       directly.
  *
  * @param k A pointer to the key.

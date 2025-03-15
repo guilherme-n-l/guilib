@@ -6,7 +6,7 @@
 /**
  * @file pq.h
  * @brief Priority Queue Implementation
- * 
+ *
  * This header file declares the interface for a priority queue (pq_t) data structure
  * and associated functions. The priority queue is implemented using a binary heap
  * and supports insertion, removal, peeking, and various utility functions.
@@ -32,7 +32,7 @@ typedef struct _pq_t pq_t;
 /**
  * @brief Creates a new priority queue.
  *
- * This function allocates and initializes a priority queue with the specified 
+ * This function allocates and initializes a priority queue with the specified
  * maximum size and comparison function.
  *
  * @param size The maximum number of elements the priority queue can hold.
@@ -45,23 +45,58 @@ typedef struct _pq_t pq_t;
  *        @note If `compare` is NULL, the function will abort.
  *
  * @return A pointer to the created priority queue.
- * 
+ *
  * @note The priority queue needs to be freed using `pq_destroy()` when no longer needed.
  */
 pq_t *pq_create(size_t size, int (*compare)(const void *, const void *));
 
 /**
- * @brief Destroys a priority queue.
+ * @brief Creates a copy of an existing priority queue.
+ *
+ * This function creates and returns a new priority queue that is a duplicate
+ * of the given source priority queue. The new queue will have the same elements
+ * and will maintain the same heap order as the source queue. The comparison function
+ * will be copied, and the array of elements will be duplicated in memory.
+ *
+ * @param source_pq A pointer to the priority queue to be copied.
+ *
+ * @return A pointer to the newly created priority queue that is a copy of the source.
+ *
+ * @note The elements in the copied queue are the same as those in the original queue,
+ *       but any subsequent modifications to the copied queue will not affect the original
+ *       queue and vice versa.
+ *
+ * @note The caller is responsible for freeing the memory of the copied priority queue
+ *       using `pq_destroy()` when it is no longer needed.
+ */
+pq_t *pq_copy(pq_t *source_pq);
+
+/**
+ * @brief Destroys a priority queue and frees its associated memory.
  *
  * This function frees the memory used by the priority queue's array and its elements.
- * However, if the elements in the queue are pointers to structs, it will only free
- * the memory for the struct itself, not any dynamically allocated memory held by
- * the struct's attributes. The caller is responsible for freeing any such dynamically
- * allocated memory in the struct before or after destroying the queue.
+ * If the elements in the queue are pointers to dynamically allocated memory, the function
+ * will use the provided `free_func` to free each element individually before freeing the
+ * memory for the array and the priority queue structure itself.
  *
  * @param pq A pointer to the priority queue to be destroyed.
+ * @param free_func A pointer to a function that frees the memory for each element
+ *                  in the priority queue. This function should take a pointer to an element
+ *                  as its argument and return void. It is called for each element before
+ *                  the queue structure and array are freed.
+ *
+ *                  If the elements do not require special handling for freeing memory,
+ *                  the caller can pass `NULL` as the `free_func`. In this case, the elements
+ *                  will not be freed.
+ *
+ * @note The caller is responsible for providing a valid `free_func` if needed. Failure to
+ *       provide an appropriate `free_func` for dynamically allocated elements may lead to
+ *       memory leaks.
+ *
+ * @note This function frees both the internal array holding the elements and the memory used
+ *       by the priority queue structure itself.
  */
-void pq_destroy(pq_t *pq);
+void pq_destroy(pq_t *pq, void (*free_func)(void *));
 
 /**
  * @brief Inserts an element into the priority queue.
@@ -73,10 +108,10 @@ void pq_destroy(pq_t *pq);
  * @param pq A pointer to the priority queue.
  * @param i A pointer to the element to be inserted.
  *
- * @note If the priority queue is full, this function will terminate the program 
+ * @note If the priority queue is full, this function will terminate the program
  *       by calling `abort()`.
- * 
- * @note The caller is responsible for allocating memory for the element `i`. 
+ *
+ * @note The caller is responsible for allocating memory for the element `i`.
  */
 void pq_insert(pq_t *pq, void *i);
 
@@ -86,7 +121,7 @@ void pq_insert(pq_t *pq, void *i);
  * This function checks if the priority queue contains any elements.
  *
  * @param pq A pointer to the priority queue.
- * 
+ *
  * @return `1` if the priority queue is empty, `0` otherwise.
  */
 char pq_is_empty(pq_t *pq);
@@ -98,9 +133,9 @@ char pq_is_empty(pq_t *pq);
  * The top element is the one with the highest priority according to the comparison function.
  *
  * @param pq A pointer to the priority queue.
- * 
+ *
  * @return A pointer to the top element in the priority queue.
- * 
+ *
  * @note If the queue is empty, this function will abort the program.
  */
 const void *pq_peek(pq_t *pq);
@@ -112,9 +147,9 @@ const void *pq_peek(pq_t *pq);
  * to maintain the heap property. The element removed is returned.
  *
  * @param pq A pointer to the priority queue.
- * 
+ *
  * @return A pointer to the element that was removed from the top of the queue.
- * 
+ *
  * @note If the queue is empty, this function will abort the program.
  */
 const void *pq_remove(pq_t *pq);
@@ -125,7 +160,7 @@ const void *pq_remove(pq_t *pq);
  * This function returns the current number of elements in the priority queue.
  *
  * @param pq A pointer to the priority queue.
- * 
+ *
  * @return The number of elements in the priority queue.
  */
 size_t pq_len(pq_t *pq);
@@ -136,9 +171,37 @@ size_t pq_len(pq_t *pq);
  * This function returns the maximum number of elements the priority queue can hold.
  *
  * @param pq A pointer to the priority queue.
- * 
+ *
  * @return The maximum size of the priority queue.
  */
 size_t pq_size(pq_t *pq);
 
-#endif 
+/**
+ * @brief Prints the elements of a priority queue.
+ *
+ * This function prints the elements of the priority queue in order of their priority.
+ * The `to_str` function is used to convert each element to a string for printing.
+ *
+ * @param pq A pointer to the priority queue to be printed.
+ * @param to_str A function that converts each element in the queue to a string.
+ */
+void pq_print(pq_t *pq, const char* (*to_str)(const void *));
+
+/**
+ * @brief Converts a pointer's address to a string representation.
+ *
+ * This function takes the address of a pointer (i.e., a `const void *`) and
+ * returns a string that represents its memory address. The returned string
+ * is typically formatted as a hexadecimal value representing the pointer's address.
+ *
+ * @param ptr A pointer whose memory address is to be converted to a string.
+ *            The parameter is expected to be a `const void *`.
+ *
+ * @return A string representation of the memory address of the provided pointer.
+ *         The string is typically formatted as a hexadecimal number.
+ *
+ * @note The returned string represents the address of the pointer in memory,
+ *       and is not meant to represent the actual data the pointer is pointing to.
+ */
+const char *DEFAULT_VAL_TO_STR(const void *);
+#endif
