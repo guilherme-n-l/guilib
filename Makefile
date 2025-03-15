@@ -1,30 +1,26 @@
-LDPATH = ./include
-SRC_DIR = src
-TMP_DIR = tmp 
-TARGET_DIR = bin
-
 PLAT := $(shell uname -s)
+S_DIR := src
+T_DIR := bin
+SRC := $(wildcard $(S_DIR)/*.c)
+DEPS := $(S_DIR)/utils.c
+LDPATH := ./include
+CFLAGS := -O3 -Wall -fPIC -I$(LDPATH)
+LDFLAGS := -shared
 
 ifeq ($(PLAT), Darwin)
 	CC = clang
-	CFLAGS =
-	LDFLAGS =
-	LIBEXT = .dylib
+	EXT = dylib
 else ifeq ($(PLAT), Linux)
 	CC = gcc
-	CFLAGS = 
-	LDFLAGS = 
-	LIBEXT = .so
+	EXT = so
 endif
 
-CFLAGS += -O3 -Wall -fPIC -I$(LDPATH)
-LDFLAGS += -shared -L$(LDPATH)
+all: $(foreach f, $(SRC), lib$(basename $(notdir $(f))).$(EXT))
 
-SRC := $(wildcard $(SRC_DIR)/*.c)
-# DEPS := $(patsubst $(SRC_DIR)/%.c, $(TMP_DIR)/%.d, $(SRC))
-
-all: $(patsubst $(SRC_DIR)/%.c, $(TARGET_DIR)/lib%$(LIBEXT), $(SRC))
-
-$(TARGET_DIR)/lib%$(LIBEXT): $(SRC)
-	mkdir -p $(TARGET_DIR)
-	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
+lib%.$(EXT): $(S_DIR)/%.c
+	@if [[ ! $* = "utils" ]]; then \
+		[[ ! -d $(T_DIR) ]] && mkdir $(T_DIR) ;\
+		command="$(CC) $(CFLAGS) $(LDFLAGS) -o $(T_DIR)/lib$*.$(EXT) $(DEPS) $(S_DIR)/$*.c" ;\
+		echo $${command} ;\
+		eval $${command} ;\
+	fi; \
