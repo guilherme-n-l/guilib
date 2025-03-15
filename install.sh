@@ -3,6 +3,13 @@
 LDPATH=include
 SRC_DIR=src
 TARGET_DIR=bin
+PLAT=$(uname -s)
+
+if [[ $PLAT = "Darwin" ]]; then
+    LIBEXT=.dylib
+else
+    LIBEXT=.so
+fi
 
 
 usage() {
@@ -33,7 +40,7 @@ done
 
 for h_path in $LDPATH/*.h; do
     lib_name=$(basename $h_path .h)
-    so_path="$TARGET_DIR/lib$lib_name.so"
+    so_path="$TARGET_DIR/lib$lib_name$LIBEXT"
 
     [ ! -f $so_path ] && make -B
 
@@ -41,9 +48,16 @@ for h_path in $LDPATH/*.h; do
         h_name=$(basename $h_path)
         so_name=$(basename $so_path)
 
-        t_h_path=/usr/include/guilib
-        t_so_path=/usr/lib
+        if [[ $PLAT = "Darwin" ]]; then
+            t_so_path=/usr/local/lib
+            t_h_path=/usr/local/include/guilib
+        else
+            t_so_path=/usr/lib
+            t_h_path=/usr/include/guilib
+        fi
 
+
+        [ ! -d $t_so_path ] && sudo mkdir $t_so_path
         [ ! -d $t_h_path ] && sudo mkdir $t_h_path
 
         if [ ! link ]; then
