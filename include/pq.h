@@ -89,30 +89,8 @@ pq_t *pq_copy(pq_t *source_pq);
  *
  * @note This function frees both the internal array holding the elements and the memory used
  *       by the priority queue structure itself.
- *
- * @note To avoid dereferencing dangling pointers, both the original priority queue
- *       and any of its copies should be destroyed together, in any order. If a duplicate
- *       queue is destroyed and another is still being used, this could lead to invalid
- *       memory access when working with the copied queues.
  */
 void pq_destroy(pq_t *pq, void (*free_func)(void *));
-
-/**
- * @brief A constant function pointer that points to a free function.
- *
- * This function pointer, `PQ_FREE_REFERENCE`, is used in cases where no memory
- * deallocation is required for the elements in the priority queue. It can be passed
- * to functions like `pq_destroy` to indicate that the elements should not be freed.
- * It is useful when working with exact duplicates of a priority queue that do not
- * require element cleanup.
- *
- * @note After any modifications to the duplicate priority queue, the user should
- *       use the same free function as the original priority queue instead of
- *       `PQ_FREE_REFERENCE`. If modifications are made to the duplicate (e.g.,
- *       elements are added or removed), it may require a different `free_func`
- *       to properly clean up the elements when the queue is destroyed.
- */
-extern void (*const PQ_FREE_REFERENCE)(void *);
 
 /**
  * @brief Inserts an element into the priority queue.
