@@ -145,10 +145,12 @@ const void *pq_remove(pq_t *pq) {
         abort();
     }
 
-    const _pq_node_t *top_val = DEQUEUE(pq->arr, pq->len);
+    _pq_node_t *top_val = DEQUEUE(pq->arr, pq->len);
 
-    if (!pq->len)
+    if (!pq->len) {
+        top_val->copies--;
         return top_val->val;
+    }
 
     pq->arr[0] = pq->arr[pq->len];
 
@@ -163,6 +165,7 @@ const void *pq_remove(pq_t *pq) {
         idx = is_left ? LEFT(idx) : RIGHT(idx);
     }
 
+    top_val->copies--;
     return top_val->val;
 }
 
@@ -187,6 +190,16 @@ size_t pq_size(pq_t *pq) {
 void _free_container_only(void *ptr) {}
 
 void pq_print(pq_t *pq, const char* (* to_str)(const void *)) {
+    if (!pq) {
+        fprintf(stderr, "pq_error: Trying to print nullptr\n");
+        abort();
+    }
+
+    if (!to_str) {
+        fprintf(stderr, "pq_error: Must provide a print function\n");
+        abort();
+    }
+
     pq_t *cp = pq_copy(pq);
 
     while (!pq_is_empty(cp)) {
@@ -195,5 +208,5 @@ void pq_print(pq_t *pq, const char* (* to_str)(const void *)) {
         free((void *)str);
     }
 
-    pq_destroy(cp, _free_container_only);
+    pq_destroy(cp, NULL);
 };
