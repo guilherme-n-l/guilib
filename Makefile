@@ -18,8 +18,8 @@ endif
 all: $(foreach f, $(SRC), lib$(basename $(notdir $(f))).$(EXT))
 
 lib%.$(EXT): $(S_DIR)/%.c
-	@if [[ ! $* = "utils" ]]; then \
-		[[ ! -d $(T_DIR) ]] && mkdir $(T_DIR) ;\
+	@if [ ! $* = "utils" ]; then \
+		[ ! -d $(T_DIR) ] && mkdir $(T_DIR) ;\
 		command="$(CC) $(CFLAGS) $(LDFLAGS) -o $(T_DIR)/lib$*.$(EXT) $(DEPS) $(S_DIR)/$*.c" ;\
 		echo $${command} ;\
 		eval $${command} ;\
