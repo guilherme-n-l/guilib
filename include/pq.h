@@ -28,7 +28,6 @@
  */
 typedef struct _pq_t pq_t;
 
-
 /**
  * @brief Creates a new priority queue.
  *
@@ -42,10 +41,9 @@ typedef struct _pq_t pq_t;
  *        - Zero if the two elements have equal priority.
  *        - A positive integer if the first element has lower priority than the second.
  *
- *        @note If `compare` is NULL, the function will abort.
- *
  * @return A pointer to the created priority queue.
  *
+ * @note The compare function must not be NULL
  * @note The priority queue needs to be freed using `pq_destroy()` when no longer needed.
  */
 pq_t *pq_create(size_t size, int (*compare)(const void *, const void *));
@@ -81,13 +79,9 @@ pq_t *pq_copy(pq_t *source_pq);
  *
  * @param pq A pointer to the priority queue to be destroyed.
  * @param free_func A pointer to a function that frees the memory for each element
- *                  in the priority queue. This function should take a pointer to an element
- *                  as its argument and return void. It is called for each element before
- *                  the queue structure and array are freed.
- *
- *                  If the elements do not require special handling for freeing memory,
- *                  the caller can pass `NULL` as the `free_func`. In this case, the elements
- *                  will not be freed.
+ *       in the priority queue. This function should take a pointer to an element
+ *       as its argument and return void. It is called for each element before
+ *       the queue structure and array are freed.
  *
  * @note The caller is responsible for providing a valid `free_func` if needed. Failure to
  *       provide an appropriate `free_func` for dynamically allocated elements may lead to
@@ -95,8 +89,30 @@ pq_t *pq_copy(pq_t *source_pq);
  *
  * @note This function frees both the internal array holding the elements and the memory used
  *       by the priority queue structure itself.
+ *
+ * @note To avoid dereferencing dangling pointers, both the original priority queue
+ *       and any of its copies should be destroyed together, in any order. If a duplicate
+ *       queue is destroyed and another is still being used, this could lead to invalid
+ *       memory access when working with the copied queues.
  */
 void pq_destroy(pq_t *pq, void (*free_func)(void *));
+
+/**
+ * @brief A constant function pointer that points to a free function.
+ *
+ * This function pointer, `PQ_FREE_REFERENCE`, is used in cases where no memory
+ * deallocation is required for the elements in the priority queue. It can be passed
+ * to functions like `pq_destroy` to indicate that the elements should not be freed.
+ * It is useful when working with exact duplicates of a priority queue that do not
+ * require element cleanup.
+ *
+ * @note After any modifications to the duplicate priority queue, the user should
+ *       use the same free function as the original priority queue instead of
+ *       `PQ_FREE_REFERENCE`. If modifications are made to the duplicate (e.g.,
+ *       elements are added or removed), it may require a different `free_func`
+ *       to properly clean up the elements when the queue is destroyed.
+ */
+extern void (*const PQ_FREE_REFERENCE)(void *);
 
 /**
  * @brief Inserts an element into the priority queue.
@@ -188,20 +204,21 @@ size_t pq_size(pq_t *pq);
 void pq_print(pq_t *pq, const char* (*to_str)(const void *));
 
 /**
- * @brief Converts a pointer's address to a string representation.
+ * @brief A constant function pointer that provides a string representation of a pointer.
  *
- * This function takes the address of a pointer (i.e., a `const void *`) and
- * returns a string that represents its memory address. The returned string
- * is typically formatted as a hexadecimal value representing the pointer's address.
+ * This function pointer, `DEFAULT_TO_STR`, is used to obtain a string representation
+ * of a pointer. It is particularly useful for debugging or logging purposes, where you
+ * may want to print the address or a simple string representation of the pointer itself.
  *
- * @param ptr A pointer whose memory address is to be converted to a string.
- *            The parameter is expected to be a `const void *`.
+ * The function pointed to by `DEFAULT_TO_STR` will return a string that represents
+ * the pointer address, not the contents of the memory it points to. It is a default
+ * function used in the absence of a custom string conversion function for the elements
+ * in the priority queue.
  *
- * @return A string representation of the memory address of the provided pointer.
- *         The string is typically formatted as a hexadecimal number.
- *
- * @note The returned string represents the address of the pointer in memory,
- *       and is not meant to represent the actual data the pointer is pointing to.
+ * @note The function `DEFAULT_TO_STR` will not dereference the pointer or attempt
+ *       to display the value stored at the memory location; instead, it will only return
+ *       a string representation of the pointer address.
  */
-const char *DEFAULT_VAL_TO_STR(const void *);
+extern const char *(*const DEFAULT_TO_STR)(const void *);
+
 #endif
