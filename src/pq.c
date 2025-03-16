@@ -13,11 +13,13 @@
 #define RIGHT(i) (LEFT(i) + 1)
 
 struct _pq_t {
-    size_t       len;
-    size_t       size;
-    int          (*compare)(const void *, const void *);
-    const void   **arr;
+    size_t          len;
+    size_t          size;
+    int             (*compare)(const void *, const void *);
+    const void      **arr;
 };
+
+
 
 void _sift_down(pq_t *pq, size_t idx, char is_left) {
     size_t child_idx = is_left ? LEFT(idx) : RIGHT(idx);
@@ -73,13 +75,20 @@ void _pq_destroy(pq_t *pq) {
     free(pq);
 }
 
+void _pq_free_reference(void * _) {}
+void (*const PQ_FREE_REFERENCE)(void *) = _pq_free_reference;
+
 void pq_destroy(pq_t *pq, void (*free_func)(void *)) {
     if (!free_func) {
         fprintf(stderr, "pq_error: Must provide a free function\n");
         abort();
     }
 
-    for (int i = 0; i < pq->len; i++) free_func((void *)pq->arr[i]);
+    if (free_func != PQ_FREE_REFERENCE)
+        for (int i = 0; i < pq->len; i++)
+            if (pq->arr[i])
+                free_func((void *)pq->arr[i]);
+
     free(pq->arr);
     free(pq);
 }
@@ -181,6 +190,6 @@ void pq_print(pq_t *pq, const char* (* to_str)(const void *)) {
         free((void *)str);
     }
 
-
     _pq_destroy(cp);
 };
+
