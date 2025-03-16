@@ -187,8 +187,6 @@ size_t pq_size(pq_t *pq) {
     return pq->size;
 }
 
-void _free_container_only(void *ptr) {}
-
 void pq_print(pq_t *pq, const char* (* to_str)(const void *)) {
     if (!pq) {
         fprintf(stderr, "pq_error: Trying to print nullptr\n");
