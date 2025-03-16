@@ -13,6 +13,20 @@
 #define LEFT(i) (2 * i + 1)
 #define RIGHT(i) (LEFT(i) + 1)
 
+/**
+ * @struct _pq_node_t
+ * @brief A structure representing a node in the priority queue.
+ *
+ * This structure is used internally by the priority queue to manage the elements
+ * stored in the heap. Each node holds the element's value and the number of copies
+ * of that element within various copies of a priority queue.
+ *
+ * @param copies The number of times this element appears in the priority queue.
+ * @param val A pointer to the value associated with the element.
+ *
+ * @note This structure is used internally within the priority queue and should
+ *       not be modified directly by the user.
+ */
 typedef struct {
     int                 copies;
     const void          *val;
